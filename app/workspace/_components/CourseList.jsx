@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { PlusCircle } from 'lucide-react';
 import Image from 'next/image';
 import React, { useState } from 'react'
+import AddNewCourse from './AddNewCourse';
 
 function CourseList() {
     const [courseList, setCourseList] =useState([]);
@@ -18,7 +19,9 @@ function CourseList() {
   className="rounded-lg"
 />
             <h2 className='my-2 text-lg font-bold'>Look Like you haven't created any course yet</h2>
+            <AddNewCourse>
             <Button><PlusCircle/>Create your First Course</Button>
+            </AddNewCourse>
         </div> :
         <div>
             List of Courses
