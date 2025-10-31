@@ -6,7 +6,6 @@ import axios from 'axios';
 import { db } from '@/config/db';
 import { courseTable } from '@/config/schema';
 
-// 🎯 AI Prompt Template
 const PROMPT = `Generate a comprehensive Learning Course based on the user's input.
 
 Requirements:
@@ -39,7 +38,6 @@ Return ONLY valid JSON in this exact format (no additional text or markdown):
 User Input:
 `;
 
-// 📡 POST API Handler
 export async function POST(req) {
   console.log('🚀 API route initiated');
   
@@ -174,22 +172,40 @@ export async function POST(req) {
     }
 
     // ─────────────────────────────────────────────────────────────
-    // 🖼️ STEP 7.5: Generate banner image
+    // 🖼️ STEP 7.5: Handle banner image (AI or Custom)
     // ─────────────────────────────────────────────────────────────
     let bannerImageurl = null;
-    try {
-      const imagePrompt = courseData.course?.bannerImagePrompt;
+    
+    // 🆕 Check if user wants custom URL
+    if (formData.bannerImageOption === 'custom') {
+      console.log('🔗 Using custom banner URL');
+      bannerImageurl = formData.customBannerUrl;
       
-      if (imagePrompt) {
-        console.log('🎨 Generating banner image...');
-        bannerImageurl = await GenerateImage(imagePrompt);
-        console.log('✅ Banner image generated');
-      } else {
-        console.log('⚠️ No banner image prompt found');
+      // 🆕 Validate URL format
+      try {
+        new URL(bannerImageurl);
+        console.log('✅ Custom URL validated:', bannerImageurl);
+      } catch (urlError) {
+        console.warn('⚠️ Invalid URL format:', bannerImageurl);
+        // Continue anyway, database will store whatever is provided
       }
-    } catch (imageError) {
-      console.error('⚠️ Image generation failed:', imageError.message);
-      // Continue without the image
+    } 
+    // 🆕 Generate with AI if option is 'ai' or not specified
+    else {
+      try {
+        const imagePrompt = courseData.course?.bannerImagePrompt;
+        
+        if (imagePrompt) {
+          console.log('🎨 Generating banner image with AI...');
+          bannerImageurl = await GenerateImage(imagePrompt);
+          console.log('✅ Banner image generated');
+        } else {
+          console.log('⚠️ No banner image prompt found');
+        }
+      } catch (imageError) {
+        console.error('⚠️ Image generation failed:', imageError.message);
+        // Continue without the image
+      }
     }
 
     // ─────────────────────────────────────────────────────────────
@@ -217,7 +233,7 @@ export async function POST(req) {
         level: formData.level,
         courseJson: courseData,
         userEmail: userEmail,
-        bannerImageurl: bannerImageurl
+        bannerImageurl: bannerImageurl || '' // 🆕 Will be either AI-generated or custom URL
       };
       
       console.log('💾 Saving to database...');
@@ -249,6 +265,7 @@ export async function POST(req) {
       userId: userId,
       userEmail: userEmail,
       bannerImageurl: bannerImageurl,
+      bannerImageSource: formData.bannerImageOption || 'ai', // 🆕 Track source
       generatedAt: new Date().toISOString()
     });
 
@@ -291,12 +308,12 @@ const GenerateImage = async (imagePrompt) => {
           'x-api-key': process.env.AI_IMAGE_API,
           'Content-Type': 'application/json',
         },
-        timeout: 30000 // 30 second timeout
+        timeout: 30000
       }
     );
     
     console.log('✅ Image generated successfully');
-    return result.data.image; // Base64 image
+    return result.data.image;
     
   } catch (error) {
     console.error('❌ Image generation error:', error.message);
