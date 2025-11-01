@@ -1,4 +1,4 @@
-import { boolean } from "drizzle-orm/gel-core";
+import { boolean, duration } from "drizzle-orm/gel-core";
 import { integer, json, pgTable, varchar } from "drizzle-orm/pg-core";
 import { SubscriptIcon } from "lucide-react";
 
@@ -14,6 +14,7 @@ export const courseTable = pgTable("courses",{
   cid: varchar().notNull(), 
     name:varchar(),
     description:varchar(),
+    // duration:varchar(),
     chapter:integer().notNull(),
     includevideo:boolean().default(false),
     category:varchar(),

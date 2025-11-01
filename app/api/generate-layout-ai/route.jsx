@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import axios from 'axios';
 import { db } from '@/config/db';
 import { courseTable } from '@/config/schema';
+import { duration } from 'drizzle-orm/gel-core';
 
 const PROMPT = `Generate a comprehensive Learning Course based on the user's input.
 
@@ -20,6 +21,7 @@ Return ONLY valid JSON in this exact format (no additional text or markdown):
   "course": {
     "name": "Course Title",
     "description": "Detailed course description",
+    "duration" : "duration of the course"
     "category": "Main category",
     "level": "Beginner/Intermediate/Expert",
     "includevideo": true,
@@ -225,6 +227,7 @@ export async function POST(req) {
         cid: courseId,
         name: course.name || formData.name,
         description: course.description || formData.description,
+        // duration: course.duration || formData.duration,
         chapter: formData.chapter,
         includevideo: formData.includevideo,
         category: Array.isArray(formData.category) 
