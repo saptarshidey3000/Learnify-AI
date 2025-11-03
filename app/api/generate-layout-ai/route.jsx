@@ -40,6 +40,10 @@ Return ONLY valid JSON in this exact format (no additional text or markdown):
 User Input:
 `;
 
+export const ai2 = new GoogleGenAI({
+  apiKey:process.env.GEMINI_API_KEY,
+})
+
 export async function POST(req) {
   console.log('🚀 API route initiated');
   
