@@ -113,7 +113,7 @@ export async function POST(req) {
     // 📤 STEP 5: Prepare and send request to Gemini
     // ─────────────────────────────────────────────────────────────
     // const model = 'gemini-2.0-flash-exp';
-    const model = 'gemini-2.0-flash';
+    const model = 'gemini-2.5-flash';
     
     console.log('⚡ Sending request to Gemini AI...');
     const result = await ai.models.generateContent({
