@@ -266,16 +266,16 @@ export async function POST(req) {
 
   } catch (error) {
     console.error('💥 Fatal error in content generation:');
-    console.error('Type:', error.name);
-    console.error('Message:', error.message);
-    console.error('Stack:', error.stack);
+    // console.error('Type:', error.name);
+    // console.error('Message:', error.message);
+    // console.error('Stack:', error.stack);
     
     return NextResponse.json(
       { 
         success: false,
-        error: 'Failed to generate content',
-        details: error.message,
-        type: error.name
+        // error: 'Failed to generate content',
+        // details: error.message,
+        // type: error.name
       }, 
       { status: 500 }
     );
