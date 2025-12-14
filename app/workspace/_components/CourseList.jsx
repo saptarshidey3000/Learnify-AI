@@ -2,11 +2,23 @@
 import { Button } from '@/components/ui/button';
 import { PlusCircle } from 'lucide-react';
 import Image from 'next/image';
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import AddNewCourse from './AddNewCourse';
+import axios from 'axios';
+import { useUser } from '@clerk/nextjs';
+import CourseCard from './CourseCard';
 
 function CourseList() {
     const [courseList, setCourseList] =useState([]);
+    const {user} =useUser();
+    useEffect(()=>{
+      user && GetCourseList();
+    },[user])
+    const GetCourseList=async()=>{
+      const result = await axios.get('/api/courses');
+      console.log(result);
+      setCourseList(result.data);
+    }
   return (
     <div className='mt-5'>
         <h2 className='font-bold text-3xl p-4'>Course List</h2>
@@ -23,8 +35,12 @@ function CourseList() {
             <Button><PlusCircle/>Create your First Course</Button>
             </AddNewCourse>
         </div> :
-        <div>
-            List of Courses
+        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5'>
+            {
+              courseList?.map((course,index)=>(
+                <CourseCard course={course} key={index}/>
+              ))
+            }
         </div>}
     </div>
   )
