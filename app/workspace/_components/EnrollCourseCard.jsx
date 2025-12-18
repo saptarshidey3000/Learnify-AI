@@ -1,9 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
 import { BookOpen, Clock } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
 
-function EnrollCourseCard({ course }) {
+function EnrollCourseCard({ course, enrollCourse }) {
   console.log("EnrollCourseCard received:", course);
+  console.log("EnrollCourse data:", enrollCourse);
   
   if (!course) {
     console.log("No course data provided");
@@ -16,7 +18,24 @@ function EnrollCourseCard({ course }) {
     chapter,
     bannerImageurl,
     cid,
+    coursecontent,
   } = course;
+
+  const calculateProgress = () => {
+    // Get completed chapters count
+    const completedCount = enrollCourse?.completedChapters?.length ?? 0;
+    
+    // Get total chapters count - try multiple possible field names
+    const totalChapters = coursecontent?.length ?? chapter ?? 0;
+    
+    if (totalChapters === 0) return 0;
+    
+    return Math.round((completedCount / totalChapters) * 100);
+  };
+
+  const progress = calculateProgress();
+  const completedChapters = enrollCourse?.completedChapters?.length ?? 0;
+  const totalChapters = coursecontent?.length ?? chapter ?? 0;
 
   return (
     <div className="group w-full rounded-2xl border bg-white overflow-hidden transition-all hover:shadow-lg hover:-translate-y-1 flex flex-col">
@@ -70,6 +89,19 @@ function EnrollCourseCard({ course }) {
               {description}
             </p>
           )}
+        </div>
+
+        {/* Progress Section */}
+        <div className="space-y-2">
+          <div className="flex items-center justify-between text-xs">
+            <span className="text-gray-600">
+              {completedChapters} of {totalChapters} chapters
+            </span>
+            <span className="font-semibold text-purple-600">
+              {progress}%
+            </span>
+          </div>
+          <Progress value={progress} className="h-2" />
         </div>
 
         {/* CTA - Continue Learning */}

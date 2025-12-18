@@ -57,8 +57,14 @@ function EnrollCourseList() {
                 <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
                     {enrolledCourseList.map((item, index) => {
                         console.log(`Course ${index}:`, item);
-                        // The API returns objects with 'courses' property from the join
-                        return <EnrollCourseCard key={item.enrollCourse?.id || index} course={item.courses} />
+                        // Pass both course and enrollCourse data
+                        return (
+                            <EnrollCourseCard 
+                                key={item.enrollCourse?.id || index} 
+                                course={item.courses} 
+                                enrollCourse={item.enrollCourse}
+                            />
+                        )
                     })}
                 </div>
             </div>
