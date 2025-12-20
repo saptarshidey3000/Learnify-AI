@@ -1,5 +1,4 @@
-"use client"
-import React, { useRef, useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 
 const MAX_COLORS = 8;
@@ -16,7 +15,7 @@ uniform int uTransparent;
 uniform float uScale;
 uniform float uFrequency;
 uniform float uWarpStrength;
-uniform vec2 uPointer;
+uniform vec2 uPointer; // in NDC [-1,1]
 uniform float uMouseInfluence;
 uniform float uParallax;
 uniform float uNoise;
@@ -47,8 +46,8 @@ void main() {
             vec2 r = sin(1.5 * (s.yx * uFrequency) + 2.0 * cos(s * uFrequency));
             float m0 = length(r + sin(5.0 * r.y * uFrequency - 3.0 * t + float(i)) / 4.0);
             float kBelow = clamp(uWarpStrength, 0.0, 1.0);
-            float kMix = pow(kBelow, 0.3);
-            float gain = 1.0 + max(uWarpStrength - 1.0, 0.0);
+            float kMix = pow(kBelow, 0.3); // strong response across 0..1
+            float gain = 1.0 + max(uWarpStrength - 1.0, 0.0); // allow >1 to amplify displacement
             vec2 disp = (r - s) * kBelow;
             vec2 warped = s + disp * gain;
             float m1 = length(warped + sin(5.0 * warped.y * uFrequency - 3.0 * t + float(i)) / 4.0);
@@ -96,19 +95,21 @@ void main() {
 }
 `;
 
-const ColorBends = ({
+export default function ColorBends({
+  className,
+  style,
   rotation = 45,
-  speed = 0.15,
-  colors = ['#8b5cf6', '#a855f7', '#c084fc', '#d8b4fe'],
+  speed = 0.2,
+  colors = [],
   transparent = true,
-  autoRotate = 5,
-  scale = 1.2,
-  frequency = 0.8,
-  warpStrength = 1.2,
-  mouseInfluence = 0.5,
-  parallax = 0.3,
-  noise = 0.05
-}) => {
+  autoRotate = 0,
+  scale = 1,
+  frequency = 1,
+  warpStrength = 1,
+  mouseInfluence = 1,
+  parallax = 0.5,
+  noise = 0.1
+}) {
   const containerRef = useRef(null);
   const rendererRef = useRef(null);
   const rafRef = useRef(null);
@@ -160,6 +161,7 @@ const ColorBends = ({
       alpha: true
     });
     rendererRef.current = renderer;
+    // Three r152+ uses outputColorSpace and SRGBColorSpace
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     renderer.setClearColor(0x000000, transparent ? 0 : 1);
@@ -290,161 +292,7 @@ const ColorBends = ({
   return (
     <div
       ref={containerRef}
-      className="w-full h-full absolute inset-0"
-    />
+      className={`w-full h-full relative overflow-hidden ${className}`}
+      style={style} />
   );
-};
-
-// Feature cards data
-const features = [
-  {
-    id: 1,
-    category: "Core Learning",
-    title: "AI Course Generator",
-    description: "Automatically generate structured CS courses tailored to your learning goals and pace.",
-    gridArea: "span 1 / span 1",
-    href: "/workspace"
-  },
-  {
-    id: 2,
-    category: "DSA",
-    title: "Algorithm Visualizer",
-    description: "Understand DSA through step-by-step animated visualizations and interactive examples.",
-    gridArea: "span 1 / span 1",
-    href: "#"
-  },
-  {
-    id: 3,
-    category: "Databases",
-    title: "SQL Visualizer",
-    description: "Visualize SQL queries, joins, and execution flow interactively with real-time feedback.",
-    gridArea: "span 2 / span 1",
-    href: "#"
-  },
-  {
-    id: 4,
-    category: "Interview Prep",
-    title: "AI Interview Agent",
-    description: "Practice coding interviews with AI-powered feedback, hints, and personalized coaching.",
-    gridArea: "span 1 / span 2",
-    href: "#"
-  },
-  {
-    id: 5,
-    category: "Smart Content",
-    title: "Interactive AI PDFs",
-    description: "Chat with your study materials, get instant explanations, and extract key concepts effortlessly.",
-    gridArea: "span 1 / span 1",
-    href: "#"
-  },
-  {
-    id: 6,
-    category: "Career",
-    title: "AI Career Coach",
-    description: "Get personalized career guidance, roadmap planning, and job preparation strategies.",
-    gridArea: "span 1 / span 1",
-    href: "#"
-  }
-];
-
-const FeatureCard = ({ feature }) => {
-  const handleClick = () => {
-    if (feature.href && feature.href !== '#') {
-      window.location.href = feature.href;
-    }
-  };
-
-  return (
-    <button
-      onClick={handleClick}
-      className="group relative overflow-hidden rounded-2xl border border-white/10 
-                 bg-gradient-to-br from-white/5 to-white/0 p-6
-                 transition-all duration-300 hover:border-purple-500/50 
-                 hover:bg-white/10 hover:scale-[1.02] hover:shadow-xl 
-                 hover:shadow-purple-500/20 text-left w-full h-full cursor-pointer"
-      style={{ gridArea: feature.gridArea }}
-    >
-      {/* Hover glow effect */}
-      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-pink-500/10 blur-xl"></div>
-      </div>
-
-      <div className="relative z-10 flex flex-col h-full">
-        {/* Category badge */}
-        <div className="mb-4">
-          <span className="inline-block rounded-full bg-purple-500/20 px-3 py-1 
-                         text-xs font-medium text-purple-300 border border-purple-500/30">
-            {feature.category}
-          </span>
-        </div>
-
-        {/* Title */}
-        <h3 className="text-xl font-bold text-white mb-3 group-hover:text-purple-300 transition-colors">
-          {feature.title}
-        </h3>
-
-        {/* Description */}
-        <p className="text-sm text-white/60 leading-relaxed flex-grow">
-          {feature.description}
-        </p>
-
-        {/* Arrow icon on hover */}
-        <div className="mt-4 flex items-center text-purple-400 opacity-0 group-hover:opacity-100 
-                      transition-all duration-300 transform translate-x-0 group-hover:translate-x-2">
-          <span className="text-sm font-medium">Learn more</span>
-          <svg className="w-4 h-4 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
-        </div>
-      </div>
-    </button>
-  );
-};
-
-const Featurecard = () => {
-  return (
-    <section className="relative min-h-screen py-24 overflow-hidden bg-black">
-      {/* ColorBends Background */}
-      <div className="absolute inset-0 z-0">
-        <ColorBends
-          colors={['#8b5cf6', '#a855f7', '#c084fc', '#e879f9', '#7c3aed', '#9333ea']}
-          speed={0.15}
-          scale={1.2}
-          frequency={0.8}
-          warpStrength={1.2}
-          mouseInfluence={0.5}
-          parallax={0.3}
-          autoRotate={5}
-          transparent={true}
-          noise={0.05}
-        />
-        {/* Dark overlay to ensure readability */}
-        <div className="absolute inset-0 bg-black/50"></div>
-      </div>
-
-      <div className="relative z-10 container mx-auto px-6">
-        {/* Section Header */}
-        <div className="mb-16 text-center">
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
-            Everything You Need to Learn Smarter
-          </h2>
-          <p className="mt-4 text-lg text-white/70 max-w-2xl mx-auto">
-            Learnify-AI combines AI-driven content, interactive visualizations,
-            and career-focused tools into one powerful platform.
-          </p>
-        </div>
-
-        {/* Bento Grid - Centered and Larger */}
-        <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[240px]">
-            {features.map((feature) => (
-              <FeatureCard key={feature.id} feature={feature} />
-            ))}
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-};
-
-export default Featurecard;
+}

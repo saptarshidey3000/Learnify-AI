@@ -10,41 +10,42 @@ const MOBILE_BREAKPOINT = 768;
 const cardData = [
   {
     color: '#060010',
-    title: 'Analytics',
-    description: 'Track user behavior',
-    label: 'Insights'
+    title: 'AI Course Generator',
+    description: 'Automatically generate structured CS courses and learning paths based on your goals.',
+    label: 'Core Learning'
   },
   {
     color: '#060010',
-    title: 'Dashboard',
-    description: 'Centralized data view',
-    label: 'Overview'
+    title: 'Algorithm Visualizer',
+    description: 'Understand DSA through step-by-step animated visualizations.',
+    label: 'DSA'
   },
   {
     color: '#060010',
-    title: 'Collaboration',
-    description: 'Work together seamlessly',
-    label: 'Teamwork'
+    title: 'SQL Visualizer',
+    description: 'Visualize SQL queries, joins, and execution flow interactively.',
+    label: 'Databases'
   },
   {
     color: '#060010',
-    title: 'Automation',
-    description: 'Streamline workflows',
-    label: 'Efficiency'
+    title: 'AI Interview Agent',
+    description: 'Practice mock interviews with AI-powered feedback and evaluation.',
+    label: 'Interview Prep'
   },
   {
     color: '#060010',
-    title: 'Integration',
-    description: 'Connect favorite tools',
-    label: 'Connectivity'
+    title: 'Interactive AI PDFs',
+    description: 'Turn static PDFs into talkable, question-answerable study material.',
+    label: 'Smart Content'
   },
   {
     color: '#060010',
-    title: 'Security',
-    description: 'Enterprise-grade protection',
-    label: 'Protection'
+    title: 'AI Career Coach',
+    description: 'Get personalized career guidance with resume analysis and roadmap generation.',
+    label: 'Career'
   }
 ];
+
 
 const createParticleElement = (x, y, color = DEFAULT_GLOW_COLOR) => {
   const el = document.createElement('div');
