@@ -4,9 +4,9 @@ import { Renderer, Program, Triangle, Mesh } from 'ogl';
 
 const RippleGrid = ({
   enableRainbow = false,
-  gridColor = '#ffffff',
-  rippleIntensity = 0.05,
-  gridSize = 10.0,
+  gridColor = '#580476',
+  rippleIntensity = 0.01,
+  gridSize = 19.0,
   gridThickness = 15.0,
   fadeDistance = 1.5,
   vignetteStrength = 2.0,
@@ -141,7 +141,9 @@ void main() {
 
     float finalFade = ddd * vignette;
     float alpha = length(color) * finalFade * opacity;
-    gl_FragColor = vec4(color * t * finalFade * opacity, alpha);
+    vec3 finalColor = mix(vec3(0.0), t, color);
+gl_FragColor = vec4(finalColor * finalFade * opacity, alpha);
+
 }`;
 
     const uniforms = {
