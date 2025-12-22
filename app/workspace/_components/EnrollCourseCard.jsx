@@ -26,7 +26,7 @@ function EnrollCourseCard({ course, enrollCourse }) {
     const completedCount = enrollCourse?.completedChapters?.length ?? 0;
     
     // Get total chapters count - try multiple possible field names
-    const totalChapters = coursecontent?.length ?? chapter ?? 0;
+    const totalChapters = coursecontent?.chapters?.length ?? chapter ?? 0;
     
     if (totalChapters === 0) return 0;
     
@@ -35,7 +35,7 @@ function EnrollCourseCard({ course, enrollCourse }) {
 
   const progress = calculateProgress();
   const completedChapters = enrollCourse?.completedChapters?.length ?? 0;
-  const totalChapters = coursecontent?.length ?? chapter ?? 0;
+  const totalChapters = coursecontent?.chapters?.length ?? chapter ?? 0;
 
   return (
     <div className="group w-full rounded-2xl border bg-white overflow-hidden transition-all hover:shadow-lg hover:-translate-y-1 flex flex-col">
@@ -106,7 +106,7 @@ function EnrollCourseCard({ course, enrollCourse }) {
 
         {/* CTA - Continue Learning */}
         <Link
-          href={`/workspace/course/${cid}`}
+          href={`/workspace/view-course/${cid}`}
           className="w-full h-11 flex items-center justify-center gap-2 rounded-full text-sm font-medium text-white bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 transition"
         >
           <BookOpen className="w-5 h-5" />
